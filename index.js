@@ -18,10 +18,6 @@ var Feeds = require("./routes/Feeds");
 var Likes = require("./routes/Likes");
 var Followers = require("./routes/Followers");
 
-app.get("/", (req, res) => {
-  res.send("welcome");
-});
-
 app.use("/users", Users);
 app.use("/Comments", Comments);
 app.use("/Feeds", Feeds);
