@@ -8,6 +8,9 @@
     "start": "pm2 start index.js",
     "dev": "npx supervisor index.js"
   },
+  "engines": {
+    "node": "10.16.0"
+  },
   "author": "ayomide olopha",
   "license": "ISC",
   "dependencies": {
