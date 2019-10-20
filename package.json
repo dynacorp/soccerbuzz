@@ -1,0 +1,26 @@
+{
+  "name": "soccerbuzz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 start index.js",
+    "dev": "npx supervisor index.js"
+  },
+  "author": "ayomide olopha",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.4",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^7.4.2",
+    "multer": "^1.4.2",
+    "mysql": "^2.17.1",
+    "mysql2": "^1.6.1",
+    "pm2": "^4.1.2",
+    "sequelize": "^4.38.0"
+  }
+}
