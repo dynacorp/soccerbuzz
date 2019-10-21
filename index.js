@@ -2,12 +2,10 @@ var compression = require("compression");
 var express = require("express");
 var cors = require("cors");
 var bodyPaser = require("body-parser");
-// var publicDir = path.join(__dirname, "../public");
 var app = express();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3306;
 
 app.use(compression());
-// app.use(express.static(publicDir));
 app.use(bodyPaser.json());
 app.use(cors());
 app.use(bodyPaser.urlencoded({ extended: false }));
