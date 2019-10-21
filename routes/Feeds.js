@@ -45,6 +45,42 @@ feed.get("/get", (req, res) => {
     });
 });
 
+//GET FEEDS BY ID
+feed.get("/get/:id", (req, res) => {
+  Feeds.hasMany(Likes, { foreignKey: "feed_id" });
+  Feeds.hasMany(Comments, { foreignKey: "feed_id" });
+  Likes.belongsTo(Feeds, { foreignKey: "id" });
+  Comments.belongsTo(Feeds, { foreignKey: "id" });
+  Feeds.findOne({
+    where: {
+      id: req.params.id
+    },
+    attributes: {
+      include: [
+        [Sequelize.fn("COUNT", Sequelize.col("comment")), "commentCount"],
+        [Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"]
+      ]
+    },
+    include: [
+      {
+        model: Likes,
+        attributes: []
+      },
+      {
+        model: Comments,
+        attributes: []
+      }
+    ],
+    distinct: true
+  })
+    .then(feeds => {
+      res.json({ data: feeds });
+    })
+    .catch(error => {
+      res.status(400).json({ error: error });
+    });
+});
+
 //POST FEED
 feed.post("/add", (req, res) => {
   var decoded = jwt.verify(
