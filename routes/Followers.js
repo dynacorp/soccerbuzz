@@ -12,7 +12,7 @@ process.env.SECRET_KEY = "ayomide's secret";
 follower.get("/get/:id", (req, res) => {
   Followers.findAndCountAll({
     where: {
-      follower_id: req.params.id
+      followed_id: req.params.id
     }
   })
     .then(follower => {
