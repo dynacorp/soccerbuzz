@@ -97,6 +97,7 @@ feed.post("/add", MulterUpload, (req, res) => {
           } else {
             const data = {
               user_id: decoded.id,
+              type: "text",
               ...req.body
             };
 
