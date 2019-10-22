@@ -15,10 +15,10 @@ module.exports = db.sequelize.define(
     description: {
       type: Sequelize.STRING
     },
-    video: {
+    type: {
       type: Sequelize.STRING
     },
-    image: {
+    media: {
       type: Sequelize.STRING
     },
     created_at: {

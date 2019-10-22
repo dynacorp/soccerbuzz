@@ -3,9 +3,11 @@ var express = require("express");
 var cors = require("cors");
 var bodyPaser = require("body-parser");
 var app = express();
-var port = process.env.PORT || 3306;
+// var publicDir = path.join(__dirname, "../public");
+var port = process.env.PORT || 5000;
 
 app.use(compression());
+// app.use(express.static(publicDir));
 app.use(bodyPaser.json());
 app.use(cors());
 app.use(bodyPaser.urlencoded({ extended: false }));
@@ -23,5 +25,5 @@ app.use("/Likes", Likes);
 app.use("/Followers", Followers);
 
 app.listen(port, function() {
-  console.log("sever running on port " + port);
+  console.log("sever running on port " + process.env.PORT);
 });

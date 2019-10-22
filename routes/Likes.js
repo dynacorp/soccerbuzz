@@ -23,4 +23,56 @@ like.get("/likes/:id", (req, res) => {
     });
 });
 
+//LIKE / UNLIKE FEED
+like.post("/:id", (req, res) => {
+  var decoded = jwt.verify(
+    req.headers["authorization"],
+    process.env.SECRET_KEY,
+    function(error, decoded) {
+      if (error) {
+        return res
+          .status(401)
+          .json({ error: true, message: "Unauthorized access." });
+      }
+      Likes.findOne({
+        where: {
+          user_id: decoded.id,
+          feed_id: req.params.id
+        }
+      })
+        .then(data => {
+          if (data.lenght !== 0) {
+            Likes.destroy({
+              where: {
+                user_id: decoded.id,
+                feed_id: req.params.id
+              }
+            })
+              .then(data => {
+                res.send({ data: "successful" });
+              })
+              .catch(error => {
+                res.status(400).json({ error: error });
+              });
+          } else {
+            const body = {
+              user_id: decoded.id,
+              feed_id: req.params.id
+            };
+            Likes.create(body)
+              .then(data => {
+                res.send({ data: "successful" });
+              })
+              .catch(error => {
+                res.status(400).json({ error: error });
+              });
+          }
+        })
+        .catch(error => {
+          res.status(400).json({ error: error });
+        });
+    }
+  );
+});
+
 module.exports = like;

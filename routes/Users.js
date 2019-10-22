@@ -110,7 +110,7 @@ users.get("/profile", (req, res) => {
             [Sequelize.fn("COUNT", Sequelize.col("feeds.id")), "feedCount"],
             [Sequelize.fn("COUNT", Sequelize.col("comment")), "commentCount"],
             [
-              Sequelize.fn("COUNT", Sequelize.col("followers.follower_id")),
+              Sequelize.fn("COUNT", Sequelize.col("followers.followed_id")),
               "followerCount"
             ],
             [
@@ -134,7 +134,7 @@ users.get("/profile", (req, res) => {
             model: Followers,
             attributes: [],
             where: {
-              follower_id: decoded.id
+              followed_id: decoded.id
             }
           }
         ],

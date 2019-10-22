@@ -37,14 +37,15 @@ follower.post("/:id", (req, res) => {
       Followers.findOne({
         where: {
           user_id: decoded.id,
-          follower_id: req.params.follow_id
+          follower_id: req.params.id
         }
       })
         .then(data => {
-          if (data) {
+          if (data.lenght !== 0) {
             Followers.destroy({
               where: {
-                id: data.id
+                user_id: decoded.id,
+                follower_id: req.params.id
               }
             })
               .then(data => {
@@ -53,18 +54,19 @@ follower.post("/:id", (req, res) => {
               .catch(error => {
                 res.status(400).json({ error: error });
               });
+          } else {
+            const body = {
+              user_id: decoded.id,
+              follower_id: req.params.id
+            };
+            Followers.create(body)
+              .then(data => {
+                res.send({ data: "successful" });
+              })
+              .catch(error => {
+                res.status(400).json({ error: error });
+              });
           }
-          const body = {
-            user_id: decoded.id,
-            follower_id: req.params.id
-          };
-          Followers.create(body)
-            .then(data => {
-              res.send({ data: "successful" });
-            })
-            .catch(error => {
-              res.status(400).json({ error: error });
-            });
         })
         .catch(error => {
           res.status(400).json({ error: error });

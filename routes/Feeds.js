@@ -3,6 +3,7 @@ const feed = express.Router();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const Sequelize = require("sequelize");
+const MulterUpload = require("../database/upload.config");
 
 const Users = require("../models/User");
 const Feeds = require("../models/Feed");
@@ -21,57 +22,35 @@ feed.get("/get", (req, res) => {
   Feeds.findAll({
     attributes: {
       include: [
-        [Sequelize.fn("COUNT", Sequelize.col("comment")), "commentCount"],
-        [Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"]
+        [
+          Sequelize.fn(
+            "COUNT",
+            Sequelize.fn("DISTINCT", Sequelize.col("comment"))
+          ),
+          "commentCount"
+        ],
+        [
+          Sequelize.fn(
+            "COUNT",
+            Sequelize.fn("DISTINCT", Sequelize.col("likes.id"))
+          ),
+          "likeCount"
+        ]
       ]
     },
     include: [
       {
         model: Likes,
-        attributes: []
+        attributes: [],
+        required: false
       },
       {
         model: Comments,
-        attributes: []
+        attributes: [],
+        required: false
       }
     ],
-    distinct: true
-  })
-    .then(feeds => {
-      res.json({ data: feeds });
-    })
-    .catch(error => {
-      res.status(400).json({ error: error });
-    });
-});
-
-//GET FEEDS BY ID
-feed.get("/get/:id", (req, res) => {
-  Feeds.hasMany(Likes, { foreignKey: "feed_id" });
-  Feeds.hasMany(Comments, { foreignKey: "feed_id" });
-  Likes.belongsTo(Feeds, { foreignKey: "id" });
-  Comments.belongsTo(Feeds, { foreignKey: "id" });
-  Feeds.findOne({
-    where: {
-      id: req.params.id
-    },
-    attributes: {
-      include: [
-        [Sequelize.fn("COUNT", Sequelize.col("comment")), "commentCount"],
-        [Sequelize.fn("COUNT", Sequelize.col("likes.id")), "likeCount"]
-      ]
-    },
-    include: [
-      {
-        model: Likes,
-        attributes: []
-      },
-      {
-        model: Comments,
-        attributes: []
-      }
-    ],
-    distinct: true
+    group: ["id"]
   })
     .then(feeds => {
       res.json({ data: feeds });
@@ -82,7 +61,7 @@ feed.get("/get/:id", (req, res) => {
 });
 
 //POST FEED
-feed.post("/add", (req, res) => {
+feed.post("/add", MulterUpload, (req, res) => {
   var decoded = jwt.verify(
     req.headers["authorization"],
     process.env.SECRET_KEY,
@@ -98,20 +77,40 @@ feed.post("/add", (req, res) => {
         }
       })
         .then(result => {
-          const data = {
-            user_id: decoded.id,
-            ...req.body
-          };
-          Feeds.create(data)
-            .then(data => {
-              res.json({ data: data });
-            })
-            .catch(error => {
-              res.status(400).send({
-                error: true,
-                message: error
+          if (req.file) {
+            const data = {
+              user_id: decoded.id,
+              type: req.file.mimetype,
+              media: req.file.originalname,
+              ...req.body
+            };
+            Feeds.create(data)
+              .then(data => {
+                res.json({ data: data });
+              })
+              .catch(error => {
+                res.status(400).send({
+                  error: true,
+                  message: error
+                });
               });
-            });
+          } else {
+            const data = {
+              user_id: decoded.id,
+              ...req.body
+            };
+
+            Feeds.create(data)
+              .then(data => {
+                res.json({ data: data });
+              })
+              .catch(error => {
+                res.status(400).send({
+                  error: true,
+                  message: error
+                });
+              });
+          }
         })
         .catch(error => {
           res.status(401).send({

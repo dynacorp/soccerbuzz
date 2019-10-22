@@ -12,7 +12,7 @@ module.exports = db.sequelize.define(
     user_id: {
       type: Sequelize.STRING
     },
-    follower_id: {
+    followed_id: {
       type: Sequelize.STRING
     },
     created_at: {
