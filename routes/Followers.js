@@ -37,7 +37,7 @@ follower.post("/:id", (req, res) => {
       Followers.findOne({
         where: {
           user_id: decoded.id,
-          follower_id: req.params.id
+          followed_id: req.params.id
         }
       })
         .then(data => {
@@ -45,7 +45,7 @@ follower.post("/:id", (req, res) => {
             Followers.destroy({
               where: {
                 user_id: decoded.id,
-                follower_id: req.params.id
+                followed_id: req.params.id
               }
             })
               .then(data => {
@@ -57,7 +57,7 @@ follower.post("/:id", (req, res) => {
           } else {
             const body = {
               user_id: decoded.id,
-              follower_id: req.params.id
+              followed_id: req.params.id
             };
             Followers.create(body)
               .then(data => {
