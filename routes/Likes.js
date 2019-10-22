@@ -9,7 +9,7 @@ like.use(cors());
 process.env.SECRET_KEY = "ayomide's secret";
 
 //GET ALL LIKES FOR A FEED
-like.get("/likes/:id", (req, res) => {
+like.get("/get/:id", (req, res) => {
   Likes.findAndCountAll({
     where: {
       feed_id: req.params.id
