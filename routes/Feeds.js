@@ -60,6 +60,52 @@ feed.get("/get", (req, res) => {
     });
 });
 
+//GET ALL FEEDS
+feed.get("/:id", (req, res) => {
+  Feeds.hasMany(Likes, { foreignKey: "feed_id" });
+  Feeds.hasMany(Comments, { foreignKey: "feed_id" });
+  Likes.belongsTo(Feeds, { foreignKey: "id" });
+  Comments.belongsTo(Feeds, { foreignKey: "id" });
+  Feeds.findOne({
+    attributes: {
+      include: [
+        [
+          Sequelize.fn(
+            "COUNT",
+            Sequelize.fn("DISTINCT", Sequelize.col("comment"))
+          ),
+          "commentCount"
+        ],
+        [
+          Sequelize.fn(
+            "COUNT",
+            Sequelize.fn("DISTINCT", Sequelize.col("likes.id"))
+          ),
+          "likeCount"
+        ]
+      ]
+    },
+    include: [
+      {
+        model: Likes,
+        attributes: [],
+        required: false
+      },
+      {
+        model: Comments,
+        attributes: [],
+        required: false
+      }
+    ]
+  })
+    .then(feeds => {
+      res.json({ data: feeds });
+    })
+    .catch(error => {
+      res.status(400).json({ error: error });
+    });
+});
+
 //POST FEED
 feed.post("/add", MulterUpload, (req, res) => {
   var decoded = jwt.verify(
