@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js",
-    "dev": "npx supervisor index.js"
+    "start": "npx supervisor index.js"
   },
   "author": "ayomide olopha",
   "license": "ISC",
