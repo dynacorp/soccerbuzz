@@ -74,7 +74,7 @@ users.post("/login", (req, res) => {
           });
           res.json({ token: token });
         } else {
-          res.status(400).json({ error: "Incorrect credentials" });
+          res.status(400).json({ error: "Invalid credentials" });
         }
       }
     })
@@ -153,6 +153,79 @@ users.get("/profile", (req, res) => {
             error: true,
             message: err
           });
+        });
+    }
+  );
+});
+
+// ALL USERS
+users.get("/allusers", (req, res) => {
+  User.hasMany(Feeds, { foreignKey: "user_id" });
+  User.hasMany(Comments, { foreignKey: "feed_id" });
+  User.hasMany(Followers, { foreignKey: "user_id" });
+  Feeds.belongsTo(User, { foreignKey: "id" });
+  Comments.belongsTo(User, { foreignKey: "id" });
+  Followers.belongsTo(User, { foreignKey: "id" });
+  var decoded = jwt.verify(
+    req.headers["authorization"],
+    process.env.SECRET_KEY,
+    function(error, decoded) {
+      if (error) {
+        return res
+          .status(401)
+          .json({ error: true, message: "Unauthorized access." });
+      }
+      User.findAll({
+        attributes: {
+          include: [
+            [
+              Sequelize.fn(
+                "COUNT",
+                Sequelize.fn("DISTINCT", Sequelize.col("comment"))
+              ),
+              "commentCount"
+            ],
+            [
+              Sequelize.fn(
+                "COUNT",
+                Sequelize.fn("DISTINCT", Sequelize.col("feeds.id"))
+              ),
+              "feedCount"
+            ],
+            [
+              Sequelize.fn(
+                "COUNT",
+                Sequelize.fn("DISTINCT", Sequelize.col("followed_id"))
+              ),
+              "followerCount"
+            ]
+          ],
+          exclude: ["password"]
+        },
+        include: [
+          {
+            model: Feeds,
+            attributes: [],
+            required: false
+          },
+          {
+            model: Comments,
+            attributes: [],
+            required: false
+          },
+          {
+            model: Followers,
+            attributes: [],
+            required: false
+          }
+        ],
+        group: ["id"]
+      })
+        .then(users => {
+          res.json({ data: users });
+        })
+        .catch(error => {
+          res.status(400).json({ error: error });
         });
     }
   );

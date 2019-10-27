@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx supervisor index.js"
-  },
-  "engines": {
-    "node": "10.16.0"
+    "start": "pm2 start index.js",
+    "dev": "npx supervisor index.js"
   },
   "author": "ayomide olopha",
   "license": "ISC",
