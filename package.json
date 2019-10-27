@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx supervisor index.js"
+    "start": "pm2-runtime start ecosystem.config.js --env production"
   },
   "author": "ayomide olopha",
   "license": "ISC",
